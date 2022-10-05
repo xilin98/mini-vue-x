@@ -28,4 +28,38 @@ describe("effect", () => {
     expect(foo).toBe(12);
     expect(res).toBe("return value");
   });
+
+  it("schedule", () => {
+    // 1. fn will run when call effect
+    // 2. set action will not trigger fn but scheduler
+    // 3. runner will trigger fn
+
+    let dummy;
+    let run;
+    let scheduler = jest.fn(() => {
+      run = runner;
+    });
+
+    const obj = reactive({
+      foo: 1,
+    });
+    const runner = effect(
+      () => {
+        dummy = obj.foo;
+      },
+      {
+        scheduler,
+      }
+    );
+
+    expect(dummy).toBe(1);
+    expect(scheduler).not.toHaveBeenCalled();
+    obj.foo++;
+
+    expect(scheduler).toHaveBeenCalledTimes(1);
+    expect(dummy).toBe(1);
+
+    run();
+    expect(dummy).toBe(2);
+  });
 });
