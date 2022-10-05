@@ -34,4 +34,5 @@ let activeEffect;
 export function effect(fn) {
   const _effect = new reactiveEffective(fn);
   _effect.run();
+  return _effect._fn.bind(_effect);
 }
