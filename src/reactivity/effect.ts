@@ -36,9 +36,10 @@ export function trigger(target, key) {
 }
 let activeEffect;
 export function effect(fn, option?) {
-  const _effect = option
-    ? new reactiveEffective(fn, option.scheduler)
-    : new reactiveEffective(fn);
+  // const _effect = option
+  //   ? new reactiveEffective(fn, option.scheduler)
+  //   : new reactiveEffective(fn);
+  const _effect = new reactiveEffective(fn, option?.scheduler);
   _effect.run();
   return _effect._fn.bind(_effect);
 }
