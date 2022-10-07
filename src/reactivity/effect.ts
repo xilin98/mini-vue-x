@@ -1,11 +1,27 @@
 class reactiveEffective {
   _fn: any;
-  constructor(fn, public scheduler?) {
+  deps = [];
+  active = true;
+  onStop?: () => {};
+  constructor(fn) {
     this._fn = fn;
   }
+
   run() {
     activeEffect = this;
-    this._fn();
+    return this._fn();
+  }
+
+  stop() {
+    if (this.onStop) {
+      this.onStop();
+    }
+
+    if (this.active) {
+      this.deps.forEach((dep: any) => {
+        dep.delete(this);
+      });
+    }
   }
 }
 
@@ -16,12 +32,17 @@ export function track(target, key) {
     targetMap = new Map();
     effectMap.set(target, targetMap);
   }
-  let deps = targetMap.get(key);
-  if (!deps) {
-    deps = new Set();
-    targetMap.set(key, deps);
+  let dep = targetMap.get(key);
+
+  if (!dep) {
+    dep = new Set();
+    targetMap.set(key, dep);
   }
-  deps.add(activeEffect);
+
+  if (activeEffect) {
+    dep.add(activeEffect);
+    activeEffect.deps.push(dep);
+  }
 }
 
 export function trigger(target, key) {
@@ -34,12 +55,22 @@ export function trigger(target, key) {
     }
   }
 }
+
 let activeEffect;
-export function effect(fn, option?) {
-  // const _effect = option
-  //   ? new reactiveEffective(fn, option.scheduler)
+export function effect(fn, options?) {
+  // const _effect = options
+  //   ? new reactiveEffective(fn, options.scheduler)
   //   : new reactiveEffective(fn);
-  const _effect = new reactiveEffective(fn, option?.scheduler);
-  _effect.run();
-  return _effect._fn.bind(_effect);
+  let effect = new reactiveEffective(fn);
+  effect = Object.assign(effect, options);
+  effect.run();
+
+  const runner: any = effect.run.bind(effect);
+  runner.effect = effect;
+  return runner;
+}
+
+export function stop(runner) {
+  const effect = runner.effect;
+  effect.stop();
 }
