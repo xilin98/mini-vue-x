@@ -1,5 +1,5 @@
 import { reactive } from "../reactive";
-import { effect } from "../effect";
+import { effect, stop } from "../effect";
 describe("effect", () => {
   it("basic function", () => {
     const user = reactive({
@@ -29,7 +29,7 @@ describe("effect", () => {
     expect(res).toBe("return value");
   });
 
-  it("schedule", () => {
+  it("scheduler", () => {
     // 1. fn will run when call effect
     // 2. set action will not trigger fn but scheduler
     // 3. runner will trigger fn
@@ -61,5 +61,42 @@ describe("effect", () => {
 
     run();
     expect(dummy).toBe(2);
+  });
+
+  it("stop", () => {
+    let dummy;
+    const obj = reactive({ prop: 1 });
+    const runner = effect(() => {
+      dummy = obj.prop;
+    });
+    obj.prop = 2;
+
+    expect(dummy).toBe(2);
+
+    // not reactive
+    stop(runner);
+    obj.prop = 3;
+    obj.prop++;
+    expect(dummy).toBe(2);
+
+    runner();
+    expect(dummy).toBe(4);
+  });
+
+  it("onStop", () => {
+    const obj = reactive({ foo: 1 });
+    const onStop = jest.fn();
+    let dummy;
+    const runner = effect(
+      () => {
+        dummy = obj.foo;
+      },
+      {
+        onStop,
+      }
+    );
+
+    stop(runner);
+    expect(onStop).toBeCalledTimes(1);
   });
 });

@@ -1,3 +1,5 @@
+let activeEffect;
+const effectMap = new Map();
 class reactiveEffective {
   _fn: any;
   deps = [];
@@ -13,19 +15,22 @@ class reactiveEffective {
   }
 
   stop() {
-    if (this.onStop) {
-      this.onStop();
-    }
-
-    if (this.active) {
-      this.deps.forEach((dep: any) => {
-        dep.delete(this);
-      });
-    }
+    cleanEffect(this);
   }
 }
 
-const effectMap = new Map();
+function cleanEffect(effect) {
+  if (effect.onStop) {
+    effect.onStop();
+  }
+
+  if (effect.active) {
+    effect.deps.forEach((dep: any) => {
+      dep.delete(effect);
+    });
+  }
+}
+
 export function track(target, key) {
   let targetMap = effectMap.get(target);
   if (!targetMap) {
@@ -42,6 +47,7 @@ export function track(target, key) {
   if (activeEffect) {
     dep.add(activeEffect);
     activeEffect.deps.push(dep);
+    activeEffect = null;
   }
 }
 
@@ -56,7 +62,6 @@ export function trigger(target, key) {
   }
 }
 
-let activeEffect;
 export function effect(fn, options?) {
   // const _effect = options
   //   ? new reactiveEffective(fn, options.scheduler)
