@@ -16,6 +16,7 @@ describe("reactive", () => {
     expect(observe).not.toBe(original);
     expect(observe.foo).toBe(1);
   });
+
   it("isReactive", () => {
     const original = {
       foo: 1,
@@ -48,8 +49,13 @@ describe("readonly", () => {
     const user = readonly({
       age: 10,
     });
-
-    user.age = 11;
+    let err;
+    try {
+      user.age = 11;
+    } catch (error) {
+      err = error;
+    }
+    expect(!!err).toBe(true);
     expect(console.warn).toBeCalled();
   });
 

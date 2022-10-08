@@ -29,9 +29,9 @@ const readonlyHandlers = {
     return res;
   },
 
-  set(target, key, newValue, receiver): boolean {
+  set(): boolean {
     console.warn();
-    return true;
+    return false;
   },
 };
 

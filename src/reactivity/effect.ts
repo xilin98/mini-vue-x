@@ -1,10 +1,12 @@
 let activeEffect;
 const effectMap = new Map();
+
 class reactiveEffective {
   _fn: any;
   deps = [];
   active = true;
   onStop?: () => {};
+
   constructor(fn) {
     this._fn = fn;
   }
@@ -44,6 +46,10 @@ export function track(target, key) {
     targetMap.set(key, dep);
   }
 
+  collectEffect(dep);
+}
+
+export function collectEffect(dep: any) {
   if (activeEffect) {
     dep.add(activeEffect);
     activeEffect.deps.push(dep);
@@ -53,6 +59,10 @@ export function track(target, key) {
 
 export function trigger(target, key) {
   let deps = effectMap.get(target).get(key);
+  notifyDep(deps);
+}
+
+export function notifyDep(deps: any) {
   for (let effect of deps) {
     if (effect.scheduler) {
       effect.scheduler();
@@ -63,9 +73,6 @@ export function trigger(target, key) {
 }
 
 export function effect(fn, options?) {
-  // const _effect = options
-  //   ? new reactiveEffective(fn, options.scheduler)
-  //   : new reactiveEffective(fn);
   let effect = new reactiveEffective(fn);
   effect = Object.assign(effect, options);
   effect.run();
