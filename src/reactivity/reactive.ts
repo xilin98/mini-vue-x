@@ -1,5 +1,5 @@
 import { isObject } from "../utils";
-import { READONLY_FLAG, REACTIVE_FLAG } from "./../const";
+import { READONLY_FLAG, REACTIVE_FLAG } from "./const";
 import { track, trigger } from "./effect";
 
 export function reactive(raw) {

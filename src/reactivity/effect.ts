@@ -1,7 +1,7 @@
 let activeEffect;
 const effectMap = new Map();
 
-class reactiveEffective {
+export class reactiveEffective {
   _fn: any;
   deps = [];
   active = true;

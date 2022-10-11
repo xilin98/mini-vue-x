@@ -34,3 +34,34 @@ export function ref(value) {
 export function isRef(value) {
   return !!value[REF_FLAG];
 }
+
+export function unRef(maybeRef) {
+  if (isRef(maybeRef)) {
+    return maybeRef.value;
+  }
+  return maybeRef;
+}
+
+const proxyRefsHandler = {
+  get(target, key) {
+    const original = Reflect.get(target, key);
+    return unRef(original);
+  },
+  set(target, key, value) {
+    if (isRef(value)) {
+      Reflect.set(target, key, value);
+      return true;
+    }
+    const orginal = Reflect.get(target, key);
+    if (isRef(orginal)) {
+      orginal.value = value;
+      return true;
+    }
+    Reflect.set(target, key, value);
+    return true;
+  },
+};
+
+export function proxyRefs(obj) {
+  return new Proxy(obj, proxyRefsHandler);
+}
