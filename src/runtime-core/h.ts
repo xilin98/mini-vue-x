@@ -1,5 +1,5 @@
 import { createVnode } from "./vnode";
 
-export function h(type, prop?, children?) {
-  return createVnode(type, prop, children);
+export function h(type, props?, children?) {
+  return createVnode(type, props, children);
 }

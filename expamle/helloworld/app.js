@@ -3,7 +3,12 @@ import { h } from "../../lib/guide-mini-vue.esm.js";
 export const App = {
   // ui
   render() {
-    return h("div", { id: "root", class: ["purple, yellow"] }, "mini-vue");
+    window.self = this;
+    this.$el;
+    return h("div", { id: "root", class: ["green"] }, [
+      h("div", { class: ["yellow"] }, "sub1"),
+      h("a", { class: ["purple"] }, "sub2" + this.msg),
+    ]);
   },
   setup() {
     return {

@@ -1,5 +1,6 @@
 import { isObject } from "../utils";
 import { createComponentInstance, setupComponent } from "./component";
+import { createVnode } from "./vnode";
 
 export function render(vnode, container) {
   // call patch here
@@ -23,12 +24,14 @@ function processComponent(vnode: any, container) {
 function mountComponent(vnode: any, container) {
   const instance = createComponentInstance(vnode);
   setupComponent(instance);
-  setupRenderEffect(instance, container);
+  setupRenderEffect(instance, container, vnode);
 }
 
-function setupRenderEffect(instance, container) {
-  const subTree = instance.render();
+function setupRenderEffect(instance, container, vnode) {
+  const { proxy } = instance;
+  const subTree = instance.render.call(proxy);
   patch(subTree, container);
+  vnode.el = subTree.el;
 }
 
 function processElement(vnode: any, container: any) {
@@ -36,12 +39,22 @@ function processElement(vnode: any, container: any) {
 }
 
 function mountElement(vnode: any, container: any) {
-  const el = document.createElement(vnode.type);
+  let el = (vnode.el = document.createElement(vnode.type));
   const { children } = vnode;
-  el.textContent = children;
+  if (typeof children === "string") {
+    el.textContent = children;
+  } else if (Array.isArray(children)) {
+    mountChildren(children, el);
+  }
   const { props } = vnode;
   for (const key in props) {
     el.setAttribute(key, props[key]);
   }
   container.append(el);
+}
+
+function mountChildren(children: any[], container: any) {
+  children.forEach((vnode) => {
+    patch(vnode, container);
+  });
 }
