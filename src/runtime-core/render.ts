@@ -50,13 +50,17 @@ function mountElement(vnode: any, container: any) {
   }
   const { props } = vnode;
   for (const key in props) {
-    if (key === "onClick") {
-      el.addEventListener("click", props[key]);
+    if (isEvent(key)) {
+      el.addEventListener(key.slice(2).toLowerCase(), props[key]);
     } else {
       el.setAttribute(key, props[key]);
     }
   }
   container.append(el);
+}
+
+function isEvent(key) {
+  return /^on[A-Z]/.test(key);
 }
 
 function mountChildren(children: any[], container: any) {

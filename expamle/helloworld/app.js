@@ -13,6 +13,9 @@ export const App = {
         onClick() {
           console.log("you click it");
         },
+        onMousedown() {
+          console.log("onmousedown");
+        },
       },
       [
         h("div", { class: ["yellow"] }, "sub1"),
