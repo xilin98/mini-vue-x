@@ -1,5 +1,5 @@
 import { h } from "../../lib/guide-mini-vue.esm.js";
-
+import { Foo } from "./Foo.js";
 export const App = {
   // ui
   render() {
@@ -20,6 +20,7 @@ export const App = {
       [
         h("div", { class: ["yellow"] }, "sub1"),
         h("a", { class: ["purple"] }, "sub2" + this.msg),
+        h(Foo, { count: 1 }),
       ]
     );
   },
