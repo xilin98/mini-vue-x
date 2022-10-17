@@ -1,5 +1,6 @@
-import { SHAPEFLAG } from "../ShapeFlag";
+import { SHAPEFLAG } from "./const/ShapeFlag";
 import { createComponentInstance, setupComponent } from "./component";
+import { FRAGMENT_FLAG, TEXT_FLAG } from "./const/Symbols";
 
 export function render(vnode, container) {
   // call patch here
@@ -8,12 +9,24 @@ export function render(vnode, container) {
 
 function patch(vnode: any, container: any) {
   // processComponent(vnode, container);
-  const { shapeFlag } = vnode;
+  const { shapeFlag, type } = vnode;
+  if (type === FRAGMENT_FLAG) {
+    processFragment(vnode, container);
+    return;
+  }
+  if (type === TEXT_FLAG) {
+    processTextNode(vnode, container);
+    return;
+  }
   if (shapeFlag & SHAPEFLAG.ELEMENT) {
     processElement(vnode, container);
   } else if (shapeFlag & SHAPEFLAG.STATEFUL_COMPONENT) {
     processComponent(vnode, container);
   }
+}
+
+function processFragment(vnode: any, container: any) {
+  mountChildren(vnode.children, container);
 }
 
 function processComponent(vnode: any, container) {
@@ -64,4 +77,9 @@ function mountChildren(children: any[], container: any) {
   children.forEach((vnode) => {
     patch(vnode, container);
   });
+}
+function processTextNode(vnode: any, container: any) {
+  const { children } = vnode;
+  let el = (vnode.el = document.createTextNode(children));
+  container.append(el);
 }

@@ -1,4 +1,4 @@
-import { h } from "../../lib/guide-mini-vue.esm.js";
+import { h, createTextVnode } from "../../lib/guide-mini-vue.esm.js";
 import { Foo } from "./Foo.js";
 export const App = {
   render() {
@@ -7,11 +7,13 @@ export const App = {
       Foo,
       {},
       {
-        header: (info) => h("header", {}, "This is header" + "info pass from Foo" + info),
-        footer: (info) => h("footer", {}, "This is footer" + "info pass from Foo" + info),
+        header: (info) =>
+          h("header", {}, "This is header" + "info pass from Foo" + info),
+        footer: (info) =>
+          h("footer", {}, "This is footer" + "info pass from Foo" + info),
       }
     );
-    return h("div", {}, [app, foo]);
+    return h("div", {}, [app, foo, createTextVnode("node tag around me!")]);
   },
 
   setup() {
