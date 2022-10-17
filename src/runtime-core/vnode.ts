@@ -13,6 +13,8 @@ export function createVnode(type, props?, children?) {
     vnode.shapeFlag |= SHAPEFLAG.TEXT_CHILDREN;
   } else if (Array.isArray(children)) {
     vnode.shapeFlag |= SHAPEFLAG.ARRAY_CHILDREN;
+  } else if (typeof children === "object") {
+    vnode.shapeFlag |= SHAPEFLAG.SLOTS_CHILDREN;
   }
   return vnode;
 }

@@ -1,7 +1,5 @@
 import { SHAPEFLAG } from "../ShapeFlag";
-import { isObject } from "../utils";
 import { createComponentInstance, setupComponent } from "./component";
-import { createVnode } from "./vnode";
 
 export function render(vnode, container) {
   // call patch here
@@ -9,7 +7,6 @@ export function render(vnode, container) {
 }
 
 function patch(vnode: any, container: any) {
-  console.log(vnode.type);
   // processComponent(vnode, container);
   const { shapeFlag } = vnode;
   if (shapeFlag & SHAPEFLAG.ELEMENT) {

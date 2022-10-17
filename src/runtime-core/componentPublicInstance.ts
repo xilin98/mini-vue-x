@@ -1,5 +1,6 @@
 const publicPropsMap = {
   $el: (i) => i.vnode.el,
+  $slots: (i) => i.slots,
 };
 
 export const publicInstanceProxyHandlers = {
@@ -16,6 +17,7 @@ export const publicInstanceProxyHandlers = {
     }
   },
 };
+
 function hasKey(target: any, key: any) {
   return Object.prototype.hasOwnProperty.call(target, key);
 }
