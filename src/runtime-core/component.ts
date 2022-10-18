@@ -3,17 +3,22 @@ import { emit } from "./componentEmit";
 import { initProps } from "./componentProps";
 import { publicInstanceProxyHandlers } from "./componentPublicInstance";
 import { initSlots } from "./componentSlots";
-export function createComponentInstance(vnode) {
+
+let currentInstance;
+export function createComponentInstance(vnode, parent) {
+  console.log("currenInstanceParent", parent);
   const instance = {
     vnode,
     type: vnode.type,
     setupState: {},
     props: {},
     slots: {},
+    parent,
+    provides: null,
     emit,
   };
   instance.emit = emit.bind(null, instance);
-
+  instance.provides = Object.create(parent.provides || null);
   return instance;
 }
 
@@ -27,6 +32,7 @@ function setStatefulComponent(instance) {
   const component = instance.type;
   const { setup } = component;
   if (setup) {
+    setCurrentInstance(instance);
     const setupReasult = setup(shallowReadonly(instance.props), {
       emit: instance.emit,
     });
@@ -48,4 +54,12 @@ function finishComponentSetup(instance: any) {
   if (component.render) {
     instance.render = component.render;
   }
+}
+
+export function getCurrentInstance() {
+  return currentInstance;
+}
+
+function setCurrentInstance(instance) {
+  currentInstance = instance;
 }

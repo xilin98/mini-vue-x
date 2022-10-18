@@ -1,5 +1,6 @@
 import { TEXT_FLAG } from "./const/Symbols";
 import { SHAPEFLAG } from "./const/ShapeFlag";
+
 export function createVnode(type, props?, children?) {
   const vnode = {
     type,

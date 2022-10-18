@@ -7,7 +7,7 @@ export function createApp(rootComponent) {
       // create vnode first
       const rootContainer = document.querySelector(selector);
       const vnode = createVnode(rootComponent);
-      render(vnode, rootContainer);
+      render(vnode, rootContainer, {});
     },
   };
 }
