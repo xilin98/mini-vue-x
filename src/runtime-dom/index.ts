@@ -5,13 +5,18 @@ function createElement(tag) {
   return document.createElement(tag);
 }
 
-function patchProp(el, key, val) {
+function patchProp(el, key, preVal, newVal) {
   console.log("patchProp-----------");
   if (isEvent(key)) {
-    el.addEventListener(key.slice(2).toLowerCase(), val);
-  } else {
-    el.setAttribute(key, val);
+    el.addEventListener(key.slice(2).toLowerCase(), newVal);
+    return;
   }
+
+  if (newVal === undefined || newVal === null) {
+    el.removeAttribute(key);
+    return;
+  }
+  el.setAttribute(key, newVal);
 }
 
 function insert(el, container) {

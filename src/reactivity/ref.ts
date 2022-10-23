@@ -15,7 +15,10 @@ class RefImpl {
   }
 
   get value() {
-    if (isObject(this._value)) return this._value;
+    if (isObject(this._value)) {
+      collectEffect(this.dep, false);
+      return this._value;
+    }
     collectEffect(this.dep);
     return this._value;
   }

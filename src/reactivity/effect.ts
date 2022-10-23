@@ -49,11 +49,11 @@ export function track(target, key) {
   collectEffect(dep);
 }
 
-export function collectEffect(dep: any) {
+export function collectEffect(dep: any, clear = true) {
   if (activeEffect) {
     dep.add(activeEffect);
     activeEffect.deps.push(dep);
-    activeEffect = null;
+    if (clear) activeEffect = null;
   }
 }
 
