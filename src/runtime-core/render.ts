@@ -9,6 +9,8 @@ export function createRenderer(options) {
     createElement: HostCreateElement,
     patchProp: hostPatchProp,
     insert: hostInsert,
+    remove: hostRemove,
+    setElementText: hostSetElementText,
   } = options;
 
   function render(vnode, container, parent) {
@@ -66,7 +68,6 @@ export function createRenderer(options) {
         const subTree = (instance.subTree = instance.render.call(proxy));
         console.log("subTree", subTree);
         console.log("prevSubTree", prevSubTree);
-        debugger;
         patch(prevSubTree, subTree, container, instance);
         vnode.el = subTree.el;
       }
@@ -87,8 +88,44 @@ export function createRenderer(options) {
     const el = (n2.el = n1.el);
 
     patchProps(el, oldProps, newProps);
+    patchChildren(n1, n2, el, contianer);
   }
 
+  function patchChildren(prevNode, currNode, el, parent) {
+    const { shapeFlag: prevNodeShape } = prevNode;
+    const { shapeFlag: currNodeShape } = currNode;
+    const newChildren = currNode.children;
+    const oldChildren = prevNode.children;
+    if (
+      prevNodeShape & SHAPEFLAG.ARRAY_CHILDREN &&
+      currNodeShape & SHAPEFLAG.TEXT_CHILDREN
+    ) {
+      unmountChildren(oldChildren);
+      hostSetElementText(newChildren, el);
+      return;
+    }
+    if (
+      prevNodeShape & SHAPEFLAG.TEXT_CHILDREN &&
+      currNodeShape & SHAPEFLAG.TEXT_CHILDREN
+    ) {
+      if (oldChildren !== newChildren) hostSetElementText(newChildren, el);
+      return;
+    }
+    if (
+      prevNodeShape & SHAPEFLAG.TEXT_CHILDREN &&
+      currNodeShape & SHAPEFLAG.ARRAY_CHILDREN
+    ) {
+      hostSetElementText("", el);
+      mountChildren(newChildren, el, parent);
+    }
+  }
+
+  function unmountChildren(children) {
+    for (let child of children) {
+      const el = child.el;
+      hostRemove(el);
+    }
+  }
   function patchProps(el, oldProps: any, newProps: any) {
     for (let key in newProps) {
       const prevProp = oldProps[key];
@@ -98,7 +135,6 @@ export function createRenderer(options) {
       }
     }
     for (const key in oldProps) {
-      debugger;
       const prevProp = oldProps[key];
       if (!(key in newProps)) {
         hostPatchProp(el, key, prevProp, null);

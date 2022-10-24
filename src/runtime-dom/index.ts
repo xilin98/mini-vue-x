@@ -28,7 +28,21 @@ function isEvent(key) {
   return /^on[A-Z]/.test(key);
 }
 
-const renderer: any = createRenderer({ createElement, patchProp, insert });
+function remove(el) {
+  return el.remove();
+}
+
+function setElementText(text, el) {
+  el.textContent = text;
+}
+
+const renderer: any = createRenderer({
+  createElement,
+  patchProp,
+  insert,
+  remove,
+  setElementText,
+});
 
 export function createApp(...arg) {
   const rootObj = renderer.createApp(...arg);
